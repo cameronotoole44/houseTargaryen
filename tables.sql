@@ -8,6 +8,16 @@ CREATE TABLE dragon (
     death_date VARCHAR(50)
 );
 
+CREATE TABLE targaryen (
+    character_id SERIAL PRIMARY KEY,
+    name VARCHAR(25) NOT NULL,
+    full_name VARCHAR(255),
+    birth_date VARCHAR(50),
+    death_date VARCHAR(50),
+    reign_start VARCHAR(50),
+    reign_end VARCHAR(50)
+);
+
 CREATE TABLE dragon_rider (
     rider_id SERIAL PRIMARY KEY,
     targaryen_id INT,
