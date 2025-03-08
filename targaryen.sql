@@ -124,3 +124,20 @@ INSERT INTO targaryen (name, full_name, birth_date, death_date, reign_start, rei
 ('Rhaenys', 'Rhaenys Targaryen (daughter of Rhaegar)', '280 AC', '283 AC', NULL, NULL),
 ('Aegon', 'Aegon Targaryen (son of Rhaegar)', '281 AC', '283 AC', NULL, NULL),
 ('Jon', 'Jon Snow (Aegon Targaryen)', '283 AC', 'Alive', NULL, NULL);
+
+-- to fix aliases, specify these 
+UPDATE targaryen
+SET full_name = 'Aerion Targaryen (pre-conquest)'
+WHERE character_id = 11;
+
+UPDATE targaryen
+SET full_name = 'Aerion Targaryen (Brightflame)'
+WHERE character_id = 71;
+
+UPDATE targaryen
+SET full_name = 'Elaena Targaryen (pre-conquest)'
+WHERE character_id = 5;
+
+UPDATE targaryen
+SET full_name = 'Elaena Targaryen (daughter of Aegon III)'
+WHERE character_id = 59;
