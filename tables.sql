@@ -71,6 +71,18 @@ CREATE TABLE targaryen_spouse (
     FOREIGN KEY (targaryen_id) REFERENCES targaryen(character_id),
     FOREIGN KEY (spouse_id) REFERENCES targaryen(character_id)
 );
+-- INSERT INTO non_targaryen (name, full_name, birth_date, death_date) VALUES
+-- ('Elia', 'Elia Martell', '257 AC', '283 AC'),
+-- ('Lyanna', 'Lyanna Stark', '266 AC', '283 AC'),
+-- ('Myriah', 'Myriah Martell', '150 AC', '209 AC'),
+-- ('Larra', 'Larra Rogare', '115 AC', '180 AC');
+CREATE TABLE non_targaryen (
+    non_targaryen_id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    full_name VARCHAR(255),
+    birth_date VARCHAR(50),
+    death_date VARCHAR(50)
+);
 
 CREATE TABLE targaryen_heir (
     targaryen_id INT,
