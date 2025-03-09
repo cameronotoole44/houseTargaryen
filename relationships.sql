@@ -202,6 +202,8 @@ WHERE non_targaryen_id IN (
     WHERE row_num > 1
 );
 
+
+-- test
 SELECT t.full_name AS targaryen, nt.full_name AS non_targaryen_spouse, tn.marriage_date, tn.end_date
 FROM targaryen_non_targaryen_spouse tn
 JOIN targaryen t ON tn.targaryen_id = t.character_id
