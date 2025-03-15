@@ -1,6 +1,6 @@
 INSERT INTO targaryen (name, full_name, birth_date, death_date, reign_start, reign_end) VALUES
 -- pre-conquest
-('Aenar', 'Aenar Targaryen', 'Before 138 BC', 'After 114 BC', NULL, NULL),
+('Aenar', 'Aenar Targaryen', 'Before 138 BC', 'After 104 BC', NULL, NULL),
 ('Gaemon', 'Gaemon Targaryen', 'Before 114 BC', 'After 101 BC', NULL, NULL),
 ('Daenys', 'Daenys Targaryen', 'Before 126 BC', 'After 101 BC', NULL, NULL),
 ('Aegon', 'Aegon Targaryen (son of Gaemon)', '114 BC', '80 BC', NULL, NULL),
