@@ -40,6 +40,8 @@ def index():
 @app.route('/targaryens')
 def targaryens():
     sort = request.args.get('sort', 'alphabetical')
+    page = int(request.args.get('page', 1))
+    per_page = 10
 
     conn = get_db_connection()
     if conn is None:
@@ -64,6 +66,8 @@ def targaryens():
         LEFT JOIN dragon d ON dr.dragon_id = d.dragon_id
         GROUP BY t.character_id, t.name, t.full_name, t.birth_date, t.death_date, t.reign_start, t.reign_end
     '''
+
+    offset = (page - 1) * per_page
 
     if sort == 'oldest':
         order_by = 'ORDER BY COALESCE(t.birth_year, -9999) ASC'
@@ -102,27 +106,30 @@ def targaryens():
         LEFT JOIN dragon d ON dr.dragon_id = d.dragon_id
         GROUP BY l.character_id, l.name, l.full_name, l.birth_date, l.death_date, l.reign_start, l.reign_end, l.generation, l.birth_year
         ORDER BY 
-            -- First, separate BC (negative) from AC (positive) birth years
             CASE WHEN COALESCE(l.birth_year, -9999) < 0 THEN 0 ELSE 1 END,
-            -- Then, order by generation
             l.generation,
-            -- Finally, order by birth_year within generation
-            COALESCE(l.birth_year, -9999) ASC;
+            COALESCE(l.birth_year, -9999) ASC
         '''
-        cur.execute(query)
-        targaryens = cur.fetchall()
-        cur.close()
-        conn.close()
-        return render_template('targaryens.html', targaryens=targaryens, sort=sort)
-    else:
+    else:  # DEFAULT
         order_by = 'ORDER BY t.name'
 
-    query = base_query + ' ' + order_by
-    cur.execute(query)
+    # PAGINATION TO ALL SORT OPTIONS
+    if sort == 'lineage':
+        query += ' LIMIT %s OFFSET %s'
+        cur.execute(query, (per_page, offset))
+    else:
+        query = base_query + ' ' + order_by + ' LIMIT %s OFFSET %s'
+        cur.execute(query, (per_page, offset))
     targaryens = cur.fetchall()
+
+    # CALCULATE TOTAL PAGES
+    cur.execute('SELECT COUNT(*) FROM targaryen')
+    total_targaryens = cur.fetchone()[0]
+    total_pages = (total_targaryens + per_page - 1) // per_page
     cur.close()
     conn.close()
-    return render_template('targaryens.html', targaryens=targaryens, sort=sort)
+
+    return render_template('targaryens.html', targaryens=targaryens, sort=sort, page=page, total_pages=total_pages)
 
 # INDIVIDUAL DETAILS
 @app.route('/targaryen/<int:character_id>')
@@ -168,7 +175,7 @@ def individual_targaryen(character_id):
     conn.close()
 
     # DID THEY RULE
-    ruled = targaryen[5] is not None  # reign_start index
+    ruled = targaryen[5] is not None
 
     return render_template('individual.html', targaryen=targaryen, parents=parents, ruled=ruled)
 

@@ -1,0 +1,58 @@
+{% extends "base.html" %} {% block content %}
+<h1>Targaryen Profile</h1>
+
+<div class="card">
+  <div class="card-header">
+    <i class="fas fa-id-card"></i>
+    <h3>{{ targaryen[2] }} [ID: {{ targaryen[0] }}]</h3>
+  </div>
+  <div class="card-body">
+    <!-- images -->
+    <div class="image-container">
+      {% set base_filename = targaryen[2]|lower|replace(' ', '_')|replace('(',
+      '')|replace(')', '')|replace('.', '') %} {% set image1_path =
+      'images/targaryens/' + base_filename + '_1.png' %} {% set image2_path =
+      'images/targaryens/' + base_filename + '_2.png' %} {% set default_image =
+      'images/targaryens/default.png' %}
+
+      <!-- image 1 -->
+      <img
+        src="{{ url_for('static', filename=image1_path) }}"
+        alt="{{ targaryen[2] }} Image 1"
+        class="card-image"
+        onerror="this.src='{{ url_for('static', filename=default_image) }}'"
+      />
+
+      <!-- image 2 -->
+      <img
+        src="{{ url_for('static', filename=image2_path) }}"
+        alt="{{ targaryen[2] }} Image 2"
+        class="card-image"
+        onerror="this.style.display='none'"
+      />
+    </div>
+
+    <!-- info -->
+    <div class="terminal-output">
+      <p><strong>Name:</strong> {{ targaryen[2] }}</p>
+      <p><strong>Aliases:</strong> {{ targaryen[7] }}</p>
+      <p><strong>Birth Date:</strong> {{ targaryen[3] }}</p>
+      <p><strong>Death Date:</strong> {{ targaryen[4] }}</p>
+      <p>
+        <strong>Reign:</strong> {% if ruled %}Yes ({{ targaryen[5] }} - {{
+        targaryen[6] }}){% else %}No{% endif %}
+      </p>
+      <p><strong>Dragons:</strong> {{ targaryen[8] }}</p>
+      <p>
+        <strong>Parents:</strong>
+        {% for parent in parents %} {{ parent[1] }} ({{ parent[0] }}){% if not
+        loop.last %}, {% endif %} {% endfor %} {% if not parents %}Unknown{%
+        endif %}
+      </p>
+    </div>
+  </div>
+  <div class="card-footer">
+    <a href="/targaryens" class="btn">Back to List</a>
+  </div>
+</div>
+{% endblock %}
