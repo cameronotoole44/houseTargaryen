@@ -101,7 +101,13 @@ def targaryens():
         LEFT JOIN dragon_rider dr ON l.character_id = dr.targaryen_id
         LEFT JOIN dragon d ON dr.dragon_id = d.dragon_id
         GROUP BY l.character_id, l.name, l.full_name, l.birth_date, l.death_date, l.reign_start, l.reign_end, l.generation, l.birth_year
-        ORDER BY l.generation, COALESCE(l.birth_year, -9999) ASC;
+        ORDER BY 
+            -- First, separate BC (negative) from AC (positive) birth years
+            CASE WHEN COALESCE(l.birth_year, -9999) < 0 THEN 0 ELSE 1 END,
+            -- Then, order by generation
+            l.generation,
+            -- Finally, order by birth_year within generation
+            COALESCE(l.birth_year, -9999) ASC;
         '''
         cur.execute(query)
         targaryens = cur.fetchall()
