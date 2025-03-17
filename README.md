@@ -16,6 +16,12 @@ A web application built to explore the lineage of House Targaryen from _A Song o
 - **Relationships**: Displays parent-child and spouse relationships (Targaryen-Targaryen and Targaryen-Non-Targaryen).
 - **Search**: Search functionality to find Targaryens by name.
 
+## Security
+
+- **CSRF Protection**: Implemented with Flask-WTF to safeguard form submissions against Cross-Site Request Forgery attacks.
+- **Rate Limiting**: Utilizes Flask-Limiter to restrict search requests to 10 per minute, preventing abuse.
+- **Logging**: Integrated with Python’s logging module to track search attempts and errors, enhancing monitoring and debugging.
+
 ## Credits
 
 - **Data Source**: [A Wiki of Ice and Fire](https://awoiaf.westeros.org/) for Targaryen lineage and details.
