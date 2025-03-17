@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+    <title>Targaryen Database</title>
+  </head>
+  <body>
+    <header>
+      <nav class="navbar">
+        <div class="container">
+          <a class="navbar-brand" href="/">
+            <i class="fas fa-fire"></i> House of Targaryen
+          </a>
+          <button class="navbar-toggle" aria-label="Toggle navigation">
+            <i class="fas fa-bars"></i>
+          </button>
+          <ul class="navbar-menu">
+            <li>
+              <a href="/" class="{{ 'active' if request.path == '/' else '' }}">
+                <i class="fas fa-home"></i> Home
+              </a>
+            </li>
+            <li>
+              <a
+                href="/targaryens"
+                class="{{ 'active' if request.path == '/targaryens' else '' }}"
+              >
+                <i class="fas fa-crown"></i> Targaryens
+              </a>
+            </li>
+            <li>
+              <a
+                href="/dragons"
+                class="{{ 'active' if request.path == '/dragons' else '' }}"
+              >
+                <i class="fas fa-dragon"></i> Dragons
+              </a>
+            </li>
+            <li>
+              <a
+                href="/relationships"
+                class="{{ 'active' if request.path == '/relationships' else '' }}"
+              >
+                <i class="fas fa-users"></i> Relationships
+              </a>
+            </li>
+            <li>
+              <a
+                href="/search"
+                class="{{ 'active' if request.path == '/search' else '' }}"
+              >
+                <i class="fas fa-search"></i> Search
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </header>
+    <main class="container">{% block content %} {% endblock %}</main>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const toggle = document.querySelector(".navbar-toggle");
+        const menu = document.querySelector(".navbar-menu");
+
+        toggle.addEventListener("click", function () {
+          menu.classList.toggle("active");
+        });
+
+        menu.addEventListener("click", function (e) {
+          if (e.target.tagName === "A" || e.target.closest("a")) {
+            menu.classList.remove("active");
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

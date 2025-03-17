@@ -1,0 +1,75 @@
+{% extends "base.html" %} {% block content %}
+<section class="hero">
+  <h1>House Targaryen</h1>
+  <p>
+    Fire and Blood: Explore the legendary Targaryen dynasty, their dragons, and
+    their rich history that shaped the Seven Kingdoms.
+  </p>
+</section>
+
+<div class="card-grid">
+  <div class="card">
+    <div class="card-header">
+      <i class="fas fa-crown"></i>
+      <h3>Targaryens</h3>
+    </div>
+    <div class="card-body">
+      <p>
+        Explore the members of House Targaryen, from Aegon the Conqueror to
+        Daenerys Stormborn.
+      </p>
+    </div>
+    <div class="card-footer">
+      <a href="/targaryens" class="search-button">View Targaryens</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <i class="fas fa-dragon"></i>
+      <h3>Dragons</h3>
+    </div>
+    <div class="card-body">
+      <p>
+        Discover the mighty dragons that gave the Targaryens their power over
+        the Seven Kingdoms.
+      </p>
+    </div>
+    <div class="card-footer">
+      <a href="/dragons" class="search-button">View Dragons</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <i class="fas fa-users"></i>
+      <h3>Relationships</h3>
+    </div>
+    <div class="card-body">
+      <p>
+        Unravel the complex family ties and marriages that defined the Targaryen
+        dynasty.
+      </p>
+    </div>
+    <div class="card-footer">
+      <a href="/relationships" class="search-button">View Relationships</a>
+    </div>
+  </div>
+</div>
+
+<!-- <div class="info-panel">
+  <h3 class="mb-2"><i class="fas fa-search"></i> Quick Search</h3>
+  <form method="POST" action="/search" class="search-form">
+    <input
+      type="text"
+      name="search_term"
+      class="search-input"
+      placeholder="Search Targaryens by name..."
+      required
+    />
+    <button type="submit" class="search-button">
+      <i class="fas fa-search"></i> Search
+    </button>
+  </form>
+</div> -->
+{% endblock %}
