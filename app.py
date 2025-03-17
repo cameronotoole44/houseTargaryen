@@ -1,11 +1,27 @@
 from flask import Flask, render_template, request
+from flask_wtf import CSRFProtect
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from dotenv import load_dotenv
 import psycopg2
 import os
+import logging
+
+# LOGGING SET UP
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', os.urandom(24))  # FOR CSRF - REQUIRED!!!!!!!!
+csrf = CSRFProtect(app)
+limiter_storage = os.getenv('RATE_LIMIT_STORAGE', 'memory://')  # DEFAULT TO IN-MEMORY FOR DEV
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    storage_uri=limiter_storage
+)
 
 def get_static_files():
     static_files = []
@@ -28,7 +44,7 @@ def get_db_connection():
         )
         return conn
     except Exception as e:
-        print(f'Error connecting to database: {e}')
+        logger.error(f"Database connection error: {e}")
         return None
 
 # HOME
@@ -113,7 +129,7 @@ def targaryens():
     else:  # DEFAULT
         order_by = 'ORDER BY t.name'
 
-    # PAGINATION TO ALL SORT OPTIONS
+    # PAGINATION FOR ALL 
     if sort == 'lineage':
         query += ' LIMIT %s OFFSET %s'
         cur.execute(query, (per_page, offset))
@@ -122,7 +138,7 @@ def targaryens():
         cur.execute(query, (per_page, offset))
     targaryens = cur.fetchall()
 
-    # CALCULATE TOTAL PAGES
+    # TOTAL PAGES 
     cur.execute('SELECT COUNT(*) FROM targaryen')
     total_targaryens = cur.fetchone()[0]
     total_pages = (total_targaryens + per_page - 1) // per_page
@@ -248,24 +264,48 @@ def relationships():
 
 # SEARCH
 @app.route('/search', methods=['GET', 'POST'])
+@limiter.limit("10 per minute")
 def search():
     if request.method == 'POST':
-        search_term = request.form['search_term']
+        # SANITIZE AND VALIDATE
+        search_term = request.form.get('search_term', '').strip()
+        if not search_term:
+            logger.info("Search attempt with empty term")
+            return render_template('search.html', results=None, search_term='', error="Please enter a search term.")
+
+        MAX_LENGTH = 100
+        if len(search_term) > MAX_LENGTH:
+            logger.info(f"Search term too long: {search_term[:MAX_LENGTH]}")
+            return render_template('search.html', results=None, search_term=search_term[:MAX_LENGTH], 
+                                  error=f"Search term too long (max {MAX_LENGTH} characters).")
+
+        logger.info(f"Search performed with term: {search_term}")
+
         conn = get_db_connection()
         if conn is None:
+            logger.error("Database connection failed")
             return "Database connection failed", 500
         cur = conn.cursor()
-        cur.execute("""
-            SELECT character_id, name, full_name
-            FROM targaryen
-            WHERE name ILIKE %s
-            ORDER BY name;
-        """, (f'%{search_term}%',))
-        results = cur.fetchall()
-        cur.close()
-        conn.close()
+
+        try:
+            cur.execute("""
+                SELECT character_id, name, full_name
+                FROM targaryen
+                WHERE name ILIKE %s
+                ORDER BY name;
+            """, (f'%{search_term}%',))
+            results = cur.fetchall()
+        except psycopg2.Error as e:
+            logger.error(f"Database error during search: {e}")
+            return render_template('search.html', results=None, search_term=search_term, 
+                                  error="An error occurred while searching.")
+        finally:
+            cur.close()
+            conn.close()
+
         return render_template('search.html', results=results, search_term=search_term)
     return render_template('search.html', results=None)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    debug_mode = os.getenv('FLASK_DEBUG', 'False').lower() in ('true', '1', 't')
+    app.run(debug=debug_mode)
