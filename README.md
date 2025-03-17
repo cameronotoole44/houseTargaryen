@@ -1,4 +1,4 @@
-# House Targaryen Flask App
+# House Targaryen
 
 A web application built to explore the lineage of House Targaryen from _A Song of Ice and Fire_ by George R.R. Martin. I built this to help navigate the wild, tangled web of this house, because let’s be real: the Targaryens have _a lot_ going on! This app brings their history to life in a terminal-themed interface.
 
