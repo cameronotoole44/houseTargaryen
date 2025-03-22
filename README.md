@@ -10,11 +10,16 @@ A web application built to explore the lineage of House Targaryen from _A Song o
 
 ## Views
 
-- **Targaryen List**: A paginated list of all Targaryens with sorting options (alphabetical, lineage, oldest to youngest, youngest to oldest).
+- **Targaryen List**: A paginated list of all Targaryens with sorting options
+  ![Targaryen List](./gifs/lineage_look.gif)
 - **Individual Profiles**: Detailed profiles for each Targaryen.
+  ![Targaryen List](./gifs/individual_look.gif)
 - **Dragons List**: A detailed list of dragons.
+  ![Targaryen List](./gifs/dragons.gif)
 - **Relationships**: Displays parent-child and spouse relationships.
+  ![Targaryen List](./gifs/relationships.gif)
 - **Search**: Search functionality to find Targaryens by name.
+  ![Targaryen List](./gifs/search.gif)
 
 ## Security
 
