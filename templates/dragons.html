@@ -1,0 +1,96 @@
+{% extends "base.html" %} {% block content %}
+<h1>Dragons</h1>
+<p>
+  The fearsome beasts that gave House Targaryen the power to conquer and rule
+  the Seven Kingdoms.
+</p>
+
+<div class="table-container">
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Color</th>
+        <th>Eye Color</th>
+        <th>Fireball Color</th>
+        <th>Birth Date</th>
+        <th>Death Date</th>
+        <th>Riders</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for dragon in dragons %}
+      <tr>
+        <td>{{ dragon[0] }}</td>
+        <td>
+          <a
+            href="#"
+            class="btn-dragon dragon-link"
+            data-dragon-name="{{ dragon[1]|lower|replace(' ', '_') }}"
+            >{{ dragon[1] }}</a
+          >
+        </td>
+        <td>{{ dragon[2] }}</td>
+        <td>{{ dragon[3] }}</td>
+        <td>{{ dragon[4] }}</td>
+        <td>{{ dragon[5] }}</td>
+        <td>{{ dragon[6] if dragon[6] else 'Alive' }}</td>
+        <td>{{ dragon[7] if dragon[7] else 'None' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- dragon images -->
+<div id="dragonModal" class="modal">
+  <div class="modal-content">
+    <span class="close">×</span>
+    <img id="dragonImage" src="" alt="Dragon Image" class="modal-image" />
+  </div>
+</div>
+
+<div class="info-panel">
+  <h3><i class="fas fa-dragon"></i> About Targaryen Dragons</h3>
+  <p class="mb-0">
+    The dragons of House Targaryen were the last known living dragons in the
+    world. Their connection to the Targaryen bloodline allowed the family to
+    rise to power and conquer the Seven Kingdoms. Dragons continue to grow
+    throughout their lives, with the oldest and largest being Balerion the Black
+    Dread.
+  </p>
+</div>
+
+<script>
+  const modal = document.getElementById("dragonModal");
+  const modalImg = document.getElementById("dragonImage");
+  const span = document.getElementsByClassName("close")[0];
+  const dragonLinks = document.getElementsByClassName("dragon-link");
+
+  for (let i = 0; i < dragonLinks.length; i++) {
+    dragonLinks[i].onclick = function (event) {
+      event.preventDefault();
+      const dragonName = this.getAttribute("data-dragon-name");
+      const imgSrc = `/static/images/dragons/${dragonName}.png`;
+      modalImg.src = imgSrc;
+      modalImg.onerror = function () {
+        this.src = "/static/images/dragons/default.png";
+      };
+      modal.style.display = "block";
+    };
+  }
+
+  // (x), close the modal
+  span.onclick = function () {
+    modal.style.display = "none";
+  };
+
+  // clicks anywhere outside of the modal, close it
+  window.onclick = function (event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  };
+</script>
+{% endblock %}

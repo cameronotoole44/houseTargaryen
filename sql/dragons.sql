@@ -49,3 +49,20 @@ VALUES
 ((SELECT character_id FROM targaryen WHERE full_name = 'Daenerys Targaryen'), (SELECT dragon_id FROM dragon WHERE name = 'Rhaegal'), '298 AC', 'Alive'),
 ((SELECT character_id FROM targaryen WHERE full_name = 'Daenerys Targaryen'), (SELECT dragon_id FROM dragon WHERE name = 'Viserion'), '298 AC', 'Alive')
 ON CONFLICT (targaryen_id, dragon_id) DO NOTHING;
+
+INSERT INTO dragon_rider (targaryen_id, dragon_id, start_date, end_date)
+VALUES
+
+((SELECT character_id FROM targaryen WHERE full_name = 'Laena Velaryon'), (SELECT dragon_id FROM dragon WHERE name = 'Vhagar'), '120 AC', '129 AC'),
+((SELECT character_id FROM targaryen WHERE full_name = 'Aemond Targaryen'), (SELECT dragon_id FROM dragon WHERE name = 'Vhagar'), '129 AC', '130 AC'),
+
+((SELECT character_id FROM targaryen WHERE full_name = 'Maegor Targaryen I'), (SELECT dragon_id FROM dragon WHERE name = 'Balerion'), '42 AC', '48 AC'),
+((SELECT character_id FROM targaryen WHERE full_name = 'Viserys Targaryen I'), (SELECT dragon_id FROM dragon WHERE name = 'Balerion'), '103 AC', '103 AC')
+ON CONFLICT (targaryen_id, dragon_id) DO NOTHING;
+
+-- SELECT t.full_name, d.name, dr.start_date, dr.end_date
+-- FROM dragon_rider dr
+-- JOIN targaryen t ON dr.targaryen_id = t.character_id
+-- JOIN dragon d ON dr.dragon_id = d.dragon_id
+-- WHERE d.name IN ('Vhagar', 'Balerion')
+-- ORDER BY d.name, dr.start_date;

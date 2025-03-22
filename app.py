@@ -203,9 +203,13 @@ def dragons():
         return 'Database connection failed', 500
     cur = conn.cursor()
     cur.execute('''
-        SELECT dragon_id, name, color, eye_color, fireball_color
-        FROM dragon
-        ORDER BY name;
+        SELECT d.dragon_id, d.name, d.color, d.eye_color, d.fireball_color, d.birth_date, d.death_date,
+               STRING_AGG(t.full_name || ' (' || dr.start_date || ' - ' || COALESCE(dr.end_date, 'Alive') || ')', ', ') AS riders
+        FROM dragon d
+        LEFT JOIN dragon_rider dr ON d.dragon_id = dr.dragon_id
+        LEFT JOIN targaryen t ON dr.targaryen_id = t.character_id
+        GROUP BY d.dragon_id, d.name, d.color, d.eye_color, d.fireball_color, d.birth_date, d.death_date
+        ORDER BY d.name;
     ''')
     dragons = cur.fetchall()
     cur.close()
