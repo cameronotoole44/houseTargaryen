@@ -35,14 +35,20 @@ app.jinja_env.globals['static_files'] = get_static_files()
 
 def get_db_connection():
     try:
-        conn = psycopg2.connect(
-            dbname=os.getenv('DB_NAME'),
-            user=os.getenv('DB_USER'),
-            password=os.getenv('DB_PASSWORD'),
-            host=os.getenv('DB_HOST'),
-            port=os.getenv('DB_PORT')
-        )
-        return conn
+        # RENDER DATABASE_URL
+        database_url = os.getenv('DATABASE_URL')
+        if database_url:
+            conn = psycopg2.connect(database_url)
+            return conn
+        else:
+            conn = psycopg2.connect(
+                dbname=os.getenv('DB_NAME'),
+                user=os.getenv('DB_USER'),
+                password=os.getenv('DB_PASSWORD'),
+                host=os.getenv('DB_HOST'),
+                port=os.getenv('DB_PORT')
+            )
+            return conn
     except Exception as e:
         logger.error(f"Database connection error: {e}")
         return None
