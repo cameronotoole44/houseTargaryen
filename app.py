@@ -219,52 +219,60 @@ def dragons():
 # RELATIONSHIPS
 @app.route('/relationships')
 def relationships():
+    page = request.args.get('page', 1, type=int)
+    per_page = 10 
+
     conn = get_db_connection()
     if conn is None:
         return 'Database connection failed', 500
     cur = conn.cursor()
     
-    # PARENT -- CHILD
-    cur.execute('''
-        SELECT t1.name AS child, t2.name AS parent
-        FROM targaryen_parent tp
-        JOIN targaryen t1 ON tp.child_id = t1.character_id
-        JOIN targaryen t2 ON tp.parent_id = t2.character_id
-        ORDER BY t1.name;
-    ''')
-    parents = cur.fetchall()
-    
-    # TARGARYEN - TARGARYEN SPOUSE
-    cur.execute('''
-        SELECT t1.name AS targaryen, t2.name AS spouse, ts.marriage_date, ts.end_date
-        FROM targaryen_spouse ts
-        JOIN targaryen t1 ON ts.targaryen_id = t1.character_id
-        JOIN targaryen t2 ON ts.spouse_id = t2.character_id
-        ORDER BY t1.name;
-    ''')
-    spouses = cur.fetchall()
-    
-    # NON TARGARYEN SPOUSES
+    cur.execute('SELECT COUNT(*) FROM targaryen')
+    total_targaryens = cur.fetchone()[0]
+    total_pages = (total_targaryens + per_page - 1) // per_page
+
+    offset = (page - 1) * per_page
+
     cur.execute('''
         SELECT 
-            t.name AS targaryen, 
-            nt.name AS non_targaryen_spouse,
-            nt.full_name,
-            tnts.marriage_date,
-            tnts.end_date
-        FROM targaryen_non_targaryen_spouse tnts
-        JOIN targaryen t ON tnts.targaryen_id = t.character_id
-        JOIN non_targaryen nt ON tnts.non_targaryen_id = nt.non_targaryen_id
-        ORDER BY t.name;
-    ''')
-    non_targaryen_spouses = cur.fetchall()
+            t.character_id,
+            t.name,
+            t.full_name,
+            -- Parents (name and ID, distinct to avoid duplicates)
+            STRING_AGG(DISTINCT t2.name || '|' || t2.character_id, ',') AS parents,
+            -- Targaryen Spouses (name, ID, and marriage dates, distinct to avoid duplicates)
+            STRING_AGG(DISTINCT t3.name || '|' || t3.character_id || '|' || ts.marriage_date || '|' || COALESCE(ts.end_date, 'N/A'), ',') AS targaryen_spouses,
+            -- Non-Targaryen Spouses (name, full name, and marriage dates, distinct to avoid duplicates)
+            STRING_AGG(DISTINCT nt.name || '|' || COALESCE(nt.full_name, 'Unknown') || '|' || tnts.marriage_date || '|' || COALESCE(tnts.end_date, 'N/A'), ',') AS non_targaryen_spouses,
+            -- Children (name and ID, distinct to avoid duplicates)
+            STRING_AGG(DISTINCT t4.name || '|' || t4.character_id, ',') AS children
+        FROM targaryen t
+        -- Parents
+        LEFT JOIN targaryen_parent tp ON t.character_id = tp.child_id
+        LEFT JOIN targaryen t2 ON tp.parent_id = t2.character_id
+        -- Targaryen Spouses
+        LEFT JOIN targaryen_spouse ts ON t.character_id = ts.targaryen_id
+        LEFT JOIN targaryen t3 ON ts.spouse_id = t3.character_id
+        -- Non-Targaryen Spouses
+        LEFT JOIN targaryen_non_targaryen_spouse tnts ON t.character_id = tnts.targaryen_id
+        LEFT JOIN non_targaryen nt ON tnts.non_targaryen_id = nt.non_targaryen_id
+        -- Children
+        LEFT JOIN targaryen_parent tc ON t.character_id = tc.parent_id
+        LEFT JOIN targaryen t4 ON tc.child_id = t4.character_id
+        GROUP BY t.character_id, t.name, t.full_name
+        ORDER BY t.name
+        LIMIT %s OFFSET %s;
+    ''', (per_page, offset))
+    relationships = cur.fetchall()
     
     cur.close()
     conn.close()
+    
     return render_template('relationships.html', 
-                          parents=parents, 
-                          spouses=spouses,
-                          non_targaryen_spouses=non_targaryen_spouses)
+                          relationships=relationships, 
+                          page=page, 
+                          total_pages=total_pages, 
+                          per_page=per_page)
 
 # SEARCH
 @app.route('/search', methods=['GET', 'POST'])

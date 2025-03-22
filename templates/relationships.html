@@ -1,0 +1,139 @@
+{% extends "base.html" %} {% block content %}
+<h1>Targaryen Relationships</h1>
+<p>
+  The complex web of family ties and marriages within House Targaryen throughout
+  their dynasty.
+</p>
+
+<div class="relationship-section">
+  <h2><i class="fas fa-users"></i> Family Connections</h2>
+
+  <!-- top control for pagination -->
+  {% if total_pages > 1 %}
+  <div class="pagination">
+    {% if page > 1 %}
+    <a href="{{ url_for('relationships', page=page-1) }}" class="btn-dragon"
+      >« Previous</a
+    >
+    {% else %}
+    <span class="btn-dragon disabled">« Previous</span>
+    {% endif %} {% for p in range(1, total_pages + 1) %} {% if p == page %}
+    <span class="btn-dragon current">{{ p }}</span>
+    {% else %}
+    <a href="{{ url_for('relationships', page=p) }}" class="btn-dragon"
+      >{{ p }}</a
+    >
+    {% endif %} {% endfor %} {% if page < total_pages %}
+    <a href="{{ url_for('relationships', page=page+1) }}" class="btn-dragon"
+      >Next »</a
+    >
+    {% else %}
+    <span class="btn-dragon disabled">Next »</span>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- relationship list -->
+  {% if relationships %} {% for person in relationships %}
+  <details class="info-panel">
+    <summary class="relationship-summary">
+      <span class="summary-text">{{ person[1] }} ({{ person[2] }})</span>
+    </summary>
+    <div class="relationship-details">
+      <p>
+        <strong>ID:</strong>
+        <a href="/targaryen/{{ person[0] }}" class="btn-dragon"
+          >{{ person[0] }}</a
+        >
+      </p>
+
+      <!-- parents -->
+      <p>
+        <strong>Parents:</strong>
+        {% if person[3] and person[3] != '' %} {% set parent_list =
+        person[3].split(',') %} {% for parent in parent_list %} {% set
+        parent_data = parent.split('|') %}
+        <a href="/targaryen/{{ parent_data[1] }}" class="btn-dragon"
+          >{{ parent_data[0] }}</a
+        >{% if not loop.last %}, {% endif %} {% endfor %} {% else %} Unknown {%
+        endif %}
+      </p>
+
+      <!-- targaryen spouses -->
+      <p>
+        <strong>Targaryen Spouses:</strong>
+        {% if person[4] and person[4] != '' %} {% set spouse_list =
+        person[4].split(',') %} {% for spouse in spouse_list %} {% set
+        spouse_data = spouse.split('|') %}
+        <a href="/targaryen/{{ spouse_data[1] }}" class="btn-dragon"
+          >{{ spouse_data[0] }}</a
+        >
+        ({{ spouse_data[2] }} - {{ spouse_data[3] }}){% if not loop.last %}, {%
+        endif %} {% endfor %} {% else %} None {% endif %}
+      </p>
+
+      <!-- non-targaryens -->
+      <p>
+        <strong>Non-Targaryen Spouses:</strong>
+        {% if person[5] and person[5] != '' %} {% set non_spouse_list =
+        person[5].split(',') %} {% for non_spouse in non_spouse_list %} {% set
+        non_spouse_data = non_spouse.split('|') %} {{ non_spouse_data[0] }} ({{
+        non_spouse_data[1] }}, {{ non_spouse_data[2] }} - {{ non_spouse_data[3]
+        }}){% if not loop.last %}, {% endif %} {% endfor %} {% else %} None {%
+        endif %}
+      </p>
+
+      <!-- children -->
+      <p>
+        <strong>Children:</strong>
+        {% if person[6] and person[6] != '' %} {% set child_list =
+        person[6].split(',') %} {% for child in child_list %} {% set child_data
+        = child.split('|') %}
+        <a href="/targaryen/{{ child_data[1] }}" class="btn-dragon"
+          >{{ child_data[0] }}</a
+        >{% if not loop.last %}, {% endif %} {% endfor %} {% else %} None {%
+        endif %}
+      </p>
+    </div>
+  </details>
+  {% endfor %} {% else %}
+  <p>No relationships found in the database.</p>
+  {% endif %}
+
+  <!-- pagination -->
+  {% if total_pages > 1 %}
+  <div class="pagination">
+    {% if page > 1 %}
+    <a href="{{ url_for('relationships', page=page-1) }}" class="btn-dragon"
+      >« Previous</a
+    >
+    {% else %}
+    <span class="btn-dragon disabled">« Previous</span>
+    {% endif %} {% for p in range(1, total_pages + 1) %} {% if p == page %}
+    <span class="btn-dragon current">{{ p }}</span>
+    {% else %}
+    <a href="{{ url_for('relationships', page=p) }}" class="btn-dragon"
+      >{{ p }}</a
+    >
+    {% endif %} {% endfor %} {% if page < total_pages %}
+    <a href="{{ url_for('relationships', page=page+1) }}" class="btn-dragon"
+      >Next »</a
+    >
+    {% else %}
+    <span class="btn-dragon disabled">Next »</span>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+
+<div class="info-panel">
+  <h3><i class="fas fa-info-circle"></i> Targaryen Marriage Customs</h3>
+  <p class="mb-0">
+    House Targaryen often practiced marriage between brothers and sisters to
+    keep their bloodline pure, a tradition they brought from Old Valyria. This
+    practice was largely accepted due to their status as dragon-riders and
+    royalty, though it was controversial among the Faith of the Seven in
+    Westeros.
+  </p>
+</div>
+{% endblock %}
